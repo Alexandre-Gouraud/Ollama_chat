@@ -8,7 +8,7 @@
 
 ## Supported versions
 
-Ollama Chat is a single-line, actively developed project (pre-1.0, no published releases or version tags). Only the latest commit on the [`master`](https://github.com/Alexandre-git-SDV/Ollama_chat/tree/master) branch is supported with security fixes.
+Ollama Chat is a single-line, actively developed project (pre-1.0, no published releases or version tags). Only the latest commit on the [`master`](https://github.com/Alexandre-Gouraud/Ollama_chat/tree/master) branch is supported with security fixes.
 
 | Version | Supported |
 |---------|-----------|
@@ -22,8 +22,8 @@ Please **do not** open a public GitHub issue for security vulnerabilities.
 
 Instead, report it privately using one of these channels:
 
-- **Preferred**: [GitHub Security Advisories](https://github.com/Alexandre-git-SDV/Ollama_chat/security/advisories/new) — private disclosure directly on this repository.
-- Alternatively, open a regular [issue](https://github.com/Alexandre-git-SDV/Ollama_chat/issues) without sensitive details and ask to be contacted privately.
+- **Preferred**: [GitHub Security Advisories](https://github.com/Alexandre-Gouraud/Ollama_chat/security/advisories/new) — private disclosure directly on this repository.
+- Alternatively, open a regular [issue](https://github.com/Alexandre-Gouraud/Ollama_chat/issues) without sensitive details and ask to be contacted privately.
 
 When reporting, please include:
 
@@ -39,7 +39,7 @@ Ollama Chat is designed to run **locally or on a trusted network**, in front of 
 
 - The application ships **without built-in authentication**. Do not expose it directly to the public internet without adding your own reverse proxy authentication, VPN, or network-level access control.
 - External AI provider API keys (Claude, GPT, Mistral, Gemini, etc.), when configured in the Settings modal, are stored **client-side only** (browser storage) and are never persisted server-side or in MongoDB.
-- Dependency and container vulnerabilities are continuously monitored via CodeQL, Dependency Review, and Trivy in [CI](https://github.com/Alexandre-git-SDV/Ollama_chat/actions) — see `README.md` for details.
+- Dependency and container vulnerabilities are continuously monitored via CodeQL, Dependency Review, and Trivy in [CI](https://github.com/Alexandre-Gouraud/Ollama_chat/actions) — see `README.md` for details.
 
 ---
 
@@ -49,7 +49,7 @@ Ollama Chat is designed to run **locally or on a trusted network**, in front of 
 
 ## Versions supportées
 
-Ollama Chat est un projet à ligne unique, activement développé (pré-1.0, sans releases ni tags de version publiés). Seul le dernier commit de la branche [`master`](https://github.com/Alexandre-git-SDV/Ollama_chat/tree/master) bénéficie de correctifs de sécurité.
+Ollama Chat est un projet à ligne unique, activement développé (pré-1.0, sans releases ni tags de version publiés). Seul le dernier commit de la branche [`master`](https://github.com/Alexandre-Gouraud/Ollama_chat/tree/master) bénéficie de correctifs de sécurité.
 
 | Version | Supportée |
 |---------|-----------|
@@ -63,8 +63,8 @@ Merci de **ne pas** ouvrir d'issue GitHub publique pour signaler une vulnérabil
 
 Utilise plutôt l'un de ces canaux privés :
 
-- **Recommandé** : [GitHub Security Advisories](https://github.com/Alexandre-git-SDV/Ollama_chat/security/advisories/new) — signalement privé directement sur ce dépôt.
-- Sinon, ouvre une [issue](https://github.com/Alexandre-git-SDV/Ollama_chat/issues) classique sans détail sensible en demandant à être recontacté en privé.
+- **Recommandé** : [GitHub Security Advisories](https://github.com/Alexandre-Gouraud/Ollama_chat/security/advisories/new) — signalement privé directement sur ce dépôt.
+- Sinon, ouvre une [issue](https://github.com/Alexandre-Gouraud/Ollama_chat/issues) classique sans détail sensible en demandant à être recontacté en privé.
 
 Merci d'inclure dans le signalement :
 
@@ -80,7 +80,7 @@ Ollama Chat est conçu pour fonctionner **en local ou sur un réseau de confianc
 
 - L'application est livrée **sans authentification intégrée**. Ne l'expose pas directement sur Internet sans ajouter ta propre authentification via reverse proxy, un VPN, ou un contrôle d'accès réseau.
 - Les clés API des fournisseurs IA externes (Claude, GPT, Mistral, Gemini, etc.), lorsqu'elles sont configurées dans la modale Paramètres, sont stockées **uniquement côté client** (stockage du navigateur) et ne sont jamais persistées côté serveur ni dans MongoDB.
-- Les vulnérabilités des dépendances et des conteneurs sont surveillées en continu via CodeQL, Dependency Review et Trivy dans la [CI](https://github.com/Alexandre-git-SDV/Ollama_chat/actions) — voir `README.md` pour le détail.
+- Les vulnérabilités des dépendances et des conteneurs sont surveillées en continu via CodeQL, Dependency Review et Trivy dans la [CI](https://github.com/Alexandre-Gouraud/Ollama_chat/actions) — voir `README.md` pour le détail.
 
 ---
 
