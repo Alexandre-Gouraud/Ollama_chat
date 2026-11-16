@@ -6,6 +6,10 @@ A local web interface for chatting with Ollama models, with conversation storage
 
 <p align="center"><img src="docs/assets/demo-en.gif" alt="Ollama Chat demo: switching the accent color to red, picking gemma4:31b-cloud and streaming an English reply" width="900"></p>
 
+> [!IMPORTANT]
+> **This repository will no longer be maintained after its latest release.**
+> For a more actively developed open-source alternative with MCP support, plugins and agents, check out [LibreChat](https://github.com/LibreChat-AI/LibreChat).
+
 ## Features
 
 - 💬 **Streaming chat** (NDJSON) with a thinking indicator, typing cursor, and stop button
