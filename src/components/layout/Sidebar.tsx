@@ -17,6 +17,7 @@ import {
   SunIcon,
 } from '@/components/ui/Icons';
 import { useDismiss } from '@/hooks/useDismiss';
+import { useI18n } from '@/i18n/I18nProvider';
 import { Conversation } from '@/types/chat';
 import { Theme } from '@/lib/theme';
 
@@ -63,6 +64,7 @@ export default function Sidebar({
   theme = 'dark',
   onToggleTheme,
 }: Props) {
+  const { t } = useI18n();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
   // Confirmation de suppression inline (même pattern que la topbar) : un seul
@@ -75,7 +77,7 @@ export default function Sidebar({
 
   return (
     <nav
-      aria-label="Navigation des conversations"
+      aria-label={t.sidebar.nav}
       className="h-full w-[280px] flex flex-col bg-bg-sidebar border-r border-border-subtle"
     >
       {/* Header logo */}
@@ -93,14 +95,14 @@ export default function Sidebar({
           className="w-full flex items-center gap-3 px-4 min-h-[44px] rounded-xl border border-border hover:bg-bg-hover hover:border-border-strong transition-colors text-[15px] text-text-primary font-medium"
         >
           <PlusIcon size={18} />
-          Nouvelle conversation
+          {t.common.newConversation}
         </button>
       </div>
 
       {/* Liste des conversations */}
       <div className="flex-1 overflow-y-auto px-4 min-h-0">
         <p className="text-[11px] uppercase tracking-[0.09em] text-text-label mb-2 px-2 font-semibold">
-          Conversations
+          {t.sidebar.conversations}
         </p>
 
         {isLoading && (
@@ -122,7 +124,7 @@ export default function Sidebar({
         )}
 
         {!isLoading && mounted && conversations.length === 0 && (
-          <p className="text-sm text-text-muted px-3 py-6 text-center">Aucune conversation</p>
+          <p className="text-sm text-text-muted px-3 py-6 text-center">{t.sidebar.empty}</p>
         )}
 
         {mounted && conversations.length > 0 && (
@@ -149,7 +151,7 @@ export default function Sidebar({
                       <div className="flex-1 flex items-center gap-1">
                         <input
                           autoFocus
-                          aria-label="Renommer la conversation"
+                          aria-label={t.sidebar.renameInput}
                           value={renameValue}
                           onChange={(e) => setRenameValue(e.target.value)}
                           onClick={(e) => e.stopPropagation()}
@@ -168,7 +170,7 @@ export default function Sidebar({
                             onRenameConversation(conv.id, renameValue.trim() || conv.title);
                             setRenamingId(null);
                           }}
-                          aria-label="Valider"
+                          aria-label={t.sidebar.confirm}
                           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-hover transition-colors"
                         >
                           <CheckIcon size={15} color="var(--color-led-on)" />
@@ -178,7 +180,7 @@ export default function Sidebar({
                             e.stopPropagation();
                             setRenamingId(null);
                           }}
-                          aria-label="Annuler"
+                          aria-label={t.common.cancel}
                           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-hover transition-colors"
                         >
                           <XIcon size={15} color="var(--color-text-muted)" />
@@ -193,7 +195,7 @@ export default function Sidebar({
                             setRenamingId(conv.id);
                             setRenameValue(conv.title);
                           }}
-                          aria-label="Renommer"
+                          aria-label={t.sidebar.rename}
                           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-hover transition-colors opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                         >
                           <PenIcon size={13} color="var(--color-text-muted)" />
@@ -206,7 +208,7 @@ export default function Sidebar({
                             // le popover monté.
                             requestAnimationFrame(() => confirmBtnRef.current?.focus());
                           }}
-                          aria-label="Supprimer"
+                          aria-label={t.common.delete}
                           aria-haspopup="dialog"
                           aria-expanded={confirming}
                           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-led-off/15 transition-all opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
@@ -221,18 +223,18 @@ export default function Sidebar({
                     <div
                       ref={confirmPopoverRef}
                       role="dialog"
-                      aria-label="Confirmer la suppression"
+                      aria-label={t.common.confirmDelete}
                       onClick={(e) => e.stopPropagation()}
                       className="absolute top-full right-0 mt-1 w-[240px] bg-bg-card border border-border rounded-xl shadow-2xl z-50 p-3"
                     >
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <p className="text-sm text-text-primary leading-snug">
-                          Supprimer cette conversation ?
+                          {t.common.deleteConversationQuestion}
                         </p>
                         <button
                           type="button"
                           onClick={closeConfirm}
-                          aria-label="Annuler la suppression"
+                          aria-label={t.common.cancelDelete}
                           className="w-6 h-6 shrink-0 flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
                         >
                           <CloseIcon size={14} />
@@ -244,7 +246,7 @@ export default function Sidebar({
                           onClick={closeConfirm}
                           className="flex-1 h-9 rounded-lg border border-border text-sm text-text-secondary hover:bg-bg-hover transition-colors"
                         >
-                          Annuler
+                          {t.common.cancel}
                         </button>
                         <button
                           ref={confirmBtnRef}
@@ -255,7 +257,7 @@ export default function Sidebar({
                           }}
                           className="flex-1 h-9 rounded-lg bg-led-off text-white text-sm font-medium hover:brightness-110 transition-all"
                         >
-                          Supprimer
+                          {t.common.delete}
                         </button>
                       </div>
                     </div>
@@ -272,7 +274,7 @@ export default function Sidebar({
         {/* Température */}
         <div>
           <div className="flex justify-between text-xs text-text-muted mb-2 px-1">
-            <span className="font-medium">Température</span>
+            <span className="font-medium">{t.sidebar.temperature}</span>
             <span className="font-mono text-text-secondary">{temperature.toFixed(1)}</span>
           </div>
           <input
@@ -281,7 +283,7 @@ export default function Sidebar({
             max="2"
             step="0.1"
             value={temperature}
-            aria-label="Température"
+            aria-label={t.sidebar.temperature}
             onChange={(e) => onTemperatureChange(parseFloat(e.target.value))}
             className="w-full"
           />
@@ -290,7 +292,7 @@ export default function Sidebar({
         {/* Max tokens */}
         <div>
           <div className="flex justify-between text-xs text-text-muted mb-2 px-1">
-            <span className="font-medium">Max tokens</span>
+            <span className="font-medium">{t.sidebar.maxTokens}</span>
             <span className="font-mono text-text-secondary">{maxTokens}</span>
           </div>
           <input
@@ -299,7 +301,7 @@ export default function Sidebar({
             max="8192"
             step="256"
             value={maxTokens}
-            aria-label="Nombre maximum de tokens"
+            aria-label={t.sidebar.maxTokensLabel}
             onChange={(e) => onMaxTokensChange(parseInt(e.target.value))}
             className="w-full"
           />
@@ -310,20 +312,23 @@ export default function Sidebar({
           rows={3}
           value={systemPrompt}
           onChange={(e) => onSystemPromptChange(e.target.value)}
-          placeholder="Contexte…"
-          aria-label="Contexte système"
+          placeholder={t.sidebar.contextPlaceholder}
+          aria-label={t.sidebar.contextLabel}
           className="w-full text-sm bg-bg-field border border-border rounded-xl px-3 py-2 text-text-primary placeholder:text-text-placeholder resize-none focus:border-accent focus:outline-none transition-colors"
         />
 
         {/* Pied : statut connexion + actions (paramètres, thème) */}
         <div className="flex items-center gap-2 px-1">
           <div className="flex-1 min-w-0">
-            <StatusLed on={online} label={`Ollama ${online ? 'connecté' : 'déconnecté'}`} />
+            <StatusLed
+              on={online}
+              stateLabel={online ? t.status.connected : t.status.disconnected}
+              label={online ? t.sidebar.ollamaConnected : t.sidebar.ollamaDisconnected} />
           </div>
           {onOpenSettings && (
             <button
               onClick={onOpenSettings}
-              aria-label="Ouvrir les paramètres"
+              aria-label={t.sidebar.openSettings}
               className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
             >
               <SettingsIcon size={18} />
@@ -333,9 +338,7 @@ export default function Sidebar({
             <button
               onClick={onToggleTheme}
               aria-label={
-                mounted && theme === 'light'
-                  ? 'Activer le thème sombre'
-                  : 'Activer le thème clair'
+                mounted && theme === 'light' ? t.sidebar.darkTheme : t.sidebar.lightTheme
               }
               aria-pressed={mounted ? theme === 'light' : false}
               className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"

@@ -7,6 +7,7 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import { CopyIcon, CheckIcon } from '@/components/ui/Icons';
 import { useCopyFeedback } from '@/hooks/useCopyFeedback';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface Props {
   content: string;
@@ -19,6 +20,7 @@ interface Props {
  * des couleurs claires fixes pour garder un contraste suffisant en thème clair.
  */
 function CodeBlock({ children }: { children?: ReactNode }) {
+  const { t } = useI18n();
   const preRef = useRef<HTMLPreElement>(null);
   const { copied, copy } = useCopyFeedback();
 
@@ -28,14 +30,14 @@ function CodeBlock({ children }: { children?: ReactNode }) {
       <button
         type="button"
         onClick={() => copy(preRef.current?.textContent ?? '')}
-        aria-label="Copier le code"
-        title="Copier le code"
+        aria-label={t.message.copyCode}
+        title={t.message.copyCode}
         className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-md bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white/60 hover:text-white/95 backdrop-blur-sm transition-colors"
       >
         {copied ? <CheckIcon size={15} /> : <CopyIcon size={15} />}
       </button>
       <span className="sr-only" role="status" aria-live="polite">
-        {copied ? 'Code copié' : ''}
+        {copied ? t.message.codeCopied : ''}
       </span>
     </div>
   );

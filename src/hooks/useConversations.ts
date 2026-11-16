@@ -3,6 +3,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Conversation, Message } from '@/types/chat';
 import { useHydrated } from '@/hooks/useHydrated';
+import type { Locale } from '@/i18n/config';
+import { useI18n } from '@/i18n/I18nProvider';
 
 const STORAGE_KEY = 'ollama-chat-conversations';
 const ACTIVE_KEY = 'ollama-chat-active';
@@ -53,7 +55,7 @@ async function fetchConversations(): Promise<Conversation[]> {
 
 async function createConversationApi(
   model: string,
-  title?: string,
+  title: string,
   temperature?: number,
   maxTokens?: number,
   systemPrompt?: string
@@ -65,7 +67,7 @@ async function createConversationApi(
       'x-user-id': getUserId(),
     },
     body: JSON.stringify({
-      title: title || 'Nouvelle conversation',
+      title,
       model,
       temperature,
       maxTokens,
@@ -131,29 +133,39 @@ async function renameConversationApi(id: string, title: string): Promise<void> {
   if (!res.ok) throw new Error('Failed to rename conversation');
 }
 
-function generateLocalTitle(messages: Message[]): string {
+/** Titre provisoire : début du premier message, sinon `fallback` (« Nouvelle conversation »). */
+function generateLocalTitle(messages: Message[], fallback: string): string {
   const first = messages.find((m) => m.role === 'user');
-  if (!first) return 'Nouvelle conversation';
+  if (!first) return fallback;
   const text = first.content.slice(0, 50);
   return text.length < first.content.length ? text + '…' : text;
 }
 
-async function fetchGeneratedTitle(messages: Message[], model: string): Promise<string> {
+/** Titre généré par le modèle, dans la langue de l'interface (`locale`). */
+async function fetchGeneratedTitle(
+  messages: Message[],
+  model: string,
+  locale: Locale,
+  fallback: string
+): Promise<string> {
   try {
     const res = await fetch('/api/chat/title', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, model }),
+      body: JSON.stringify({ messages, model, locale }),
     });
     if (!res.ok) throw new Error('Failed to generate title');
     const data = await res.json();
-    return data.title || generateLocalTitle(messages);
+    return data.title || generateLocalTitle(messages, fallback);
   } catch {
-    return generateLocalTitle(messages);
+    return generateLocalTitle(messages, fallback);
   }
 }
 
 export function useConversations() {
+  const { locale, t } = useI18n();
+  // Titre par défaut d'une conversation, dans la langue de l'interface.
+  const newTitle = t.common.newConversation;
   const [conversations, setConversations] = useState<Conversation[]>(() => loadFromStorage());
   const [activeId, setActiveId] = useState<string | null>(() => {
     const loaded = loadFromStorage();
@@ -209,7 +221,7 @@ export function useConversations() {
       systemPrompt = ''
     ): Promise<string> => {
       try {
-        const conv = await createConversationApi(model, 'Nouvelle conversation', temperature, maxTokens, systemPrompt);
+        const conv = await createConversationApi(model, newTitle, temperature, maxTokens, systemPrompt);
         setConversations((prev) => [conv, ...prev]);
         setActiveId(conv.id);
         return conv.id;
@@ -217,7 +229,7 @@ export function useConversations() {
         const now = new Date().toISOString();
         const localConv: Conversation = {
           id: uid(),
-          title: 'Nouvelle conversation',
+          title: newTitle,
           messages: [],
           model,
           temperature: 1,
@@ -231,7 +243,7 @@ export function useConversations() {
         return localConv.id;
       }
     },
-    []
+    [newTitle]
   );
 
   const switchConversation = useCallback((id: string) => {
@@ -283,13 +295,13 @@ export function useConversations() {
           const msgs = [...c.messages, message];
           const title =
             message.role === 'user' && msgs.filter((m) => m.role === 'user').length === 1
-              ? generateLocalTitle(msgs)
+              ? generateLocalTitle(msgs, newTitle)
               : c.title;
           return { ...c, messages: msgs, title, updatedAt: new Date().toISOString() };
         })
       );
     },
-    []
+    [newTitle]
   );
 
   const updateLastAssistantMessage = useCallback(
@@ -355,7 +367,7 @@ export function useConversations() {
 
   const generateTitle = useCallback(
     async (convId: string, messages: Message[], model: string) => {
-      const title = await fetchGeneratedTitle(messages, model);
+      const title = await fetchGeneratedTitle(messages, model, locale, newTitle);
       setConversations((prev) =>
         prev.map((c) => (c.id === convId ? { ...c, title } : c))
       );
@@ -365,7 +377,7 @@ export function useConversations() {
         // continue with local update
       }
     },
-    []
+    [locale, newTitle]
   );
 
   return {

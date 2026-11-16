@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ModelDropdown from './ModelDropdown';
 import AccentPicker from './AccentPicker';
 import { RefreshIcon, InfoIcon, ExternalLinkIcon, LoaderIcon } from '@/components/ui/Icons';
+import { useI18n } from '@/i18n/I18nProvider';
 import { OllamaModel } from '@/types/chat';
 
 interface Props {
@@ -38,6 +39,7 @@ export default function GeneralTab({
   accents,
   onAccentChange,
 }: Props) {
+  const { t, f } = useI18n();
   const [refreshing, setRefreshing] = useState(false);
   const [info, setInfo] = useState<string | null>(null);
   const [infoLoading, setInfoLoading] = useState(false);
@@ -62,19 +64,20 @@ export default function GeneralTab({
         body: JSON.stringify({ model }),
       });
       if (!res.ok) {
-        setInfo('Informations indisponibles pour ce modèle.');
+        setInfo(t.general.infoUnavailable);
         return;
       }
       const data = await res.json();
       const details = data.details || {};
       const parts = [
-        details.family && `Famille : ${details.family}`,
-        details.parameter_size && `Paramètres : ${details.parameter_size}`,
-        details.quantization_level && `Quantisation : ${details.quantization_level}`,
+        details.family && f(t.general.family, { value: details.family }),
+        details.parameter_size && f(t.general.parameters, { value: details.parameter_size }),
+        details.quantization_level &&
+          f(t.general.quantization, { value: details.quantization_level }),
       ].filter(Boolean);
-      setInfo(parts.length ? parts.join(' · ') : 'Aucun détail disponible.');
+      setInfo(parts.length ? parts.join(' · ') : t.general.noDetails);
     } catch {
-      setInfo('Ollama injoignable.');
+      setInfo(t.general.unreachable);
     } finally {
       setInfoLoading(false);
     }
@@ -84,7 +87,7 @@ export default function GeneralTab({
     <div className="space-y-6">
       {/* Modèle */}
       <div>
-        <label className={labelClass}>Modèle</label>
+        <label className={labelClass}>{t.general.model}</label>
         <ModelDropdown
           models={models}
           value={model}
@@ -98,7 +101,7 @@ export default function GeneralTab({
             className="flex items-center gap-1.5 px-3 min-h-[36px] rounded-lg bg-bg-field border border-border text-xs text-text-secondary hover:bg-bg-field-hover hover:text-text-primary transition-colors"
           >
             {refreshing ? <LoaderIcon size={14} /> : <RefreshIcon size={14} />}
-            Rafraîchir
+            {t.general.refresh}
           </button>
           <button
             type="button"
@@ -106,7 +109,7 @@ export default function GeneralTab({
             className="flex items-center gap-1.5 px-3 min-h-[36px] rounded-lg bg-bg-field border border-border text-xs text-text-secondary hover:bg-bg-field-hover hover:text-text-primary transition-colors"
           >
             {infoLoading ? <LoaderIcon size={14} /> : <InfoIcon size={14} />}
-            Infos
+            {t.general.info}
           </button>
         </div>
         {info && <p className="mt-2 text-xs text-text-muted font-mono">{info}</p>}
@@ -115,14 +118,14 @@ export default function GeneralTab({
       {/* System prompt */}
       <div>
         <label htmlFor="settings-system-prompt" className={labelClass}>
-          System prompt
+          {t.general.systemPrompt}
         </label>
         <textarea
           id="settings-system-prompt"
           rows={3}
           value={systemPrompt}
           onChange={(e) => onSystemPromptChange(e.target.value)}
-          placeholder="Instruction système appliquée à chaque message…"
+          placeholder={t.general.systemPromptPlaceholder}
           className="w-full text-sm bg-bg-field border border-border rounded-xl px-3.5 py-2.5 text-text-primary placeholder:text-text-placeholder resize-none focus:border-accent focus:outline-none transition-colors"
         />
       </div>
@@ -131,7 +134,7 @@ export default function GeneralTab({
       <div>
         <div className="flex items-center justify-between mb-2.5">
           <label htmlFor="settings-temperature" className="text-[11px] font-semibold uppercase tracking-[0.09em] text-text-label">
-            Température
+            {t.general.temperature}
           </label>
           <span className="font-mono text-sm text-text-secondary">{temperature.toFixed(1)}</span>
         </div>
@@ -146,20 +149,20 @@ export default function GeneralTab({
           className="w-full"
         />
         <div className="flex justify-between text-[11px] text-text-faint mt-1.5">
-          <span>Précis</span>
-          <span>Créatif</span>
+          <span>{t.general.precise}</span>
+          <span>{t.general.creative}</span>
         </div>
       </div>
 
       {/* Accent */}
       <div>
-        <label className={labelClass}>Couleur d&apos;accent</label>
+        <label className={labelClass}>{t.general.accent}</label>
         <AccentPicker accents={accents} value={accent} onChange={onAccentChange} />
       </div>
 
       {/* Liens */}
       <div>
-        <label className={labelClass}>Liens</label>
+        <label className={labelClass}>{t.general.links}</label>
         <div className="flex flex-col gap-1.5">
           <a
             href="https://ollama.com"
@@ -175,7 +178,7 @@ export default function GeneralTab({
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-sm text-text-secondary hover:text-accent transition-colors"
           >
-            <ExternalLinkIcon size={15} /> Bibliothèque de modèles
+            <ExternalLinkIcon size={15} /> {t.general.library}
           </a>
         </div>
       </div>

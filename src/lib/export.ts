@@ -1,4 +1,9 @@
+import { format } from '@/i18n/format';
+import type { Messages } from '@/i18n/messages';
 import { Conversation } from '@/types/chat';
+
+/** Libellés traduits des en-têtes de l'export Markdown. */
+export type ExportLabels = Messages['export'];
 
 /** Réduit un titre à un slug de fichier sûr (ASCII, minuscules, tirets). */
 function slugify(title: string): string {
@@ -35,17 +40,20 @@ export function exportConversationJSON(conv: Conversation) {
   );
 }
 
-/** Exporte la conversation courante au format Markdown lisible. */
-export function exportConversationMarkdown(conv: Conversation) {
-  const lines: string[] = [`# ${conv.title || 'Conversation'}`, ''];
-  if (conv.model) lines.push(`> Modèle : ${conv.model}`, '');
+/**
+ * Exporte la conversation courante au format Markdown lisible, avec des
+ * en-têtes dans la langue de l'interface.
+ */
+export function exportConversationMarkdown(conv: Conversation, labels: ExportLabels) {
+  const lines: string[] = [`# ${conv.title || labels.untitled}`, ''];
+  if (conv.model) lines.push(`> ${format(labels.model, { model: conv.model })}`, '');
   for (const m of conv.messages) {
     const who =
       m.role === 'user'
-        ? 'Vous'
+        ? labels.you
         : m.role === 'assistant'
-          ? m.model || 'Assistant'
-          : 'Système';
+          ? m.model || labels.assistant
+          : labels.system;
     lines.push(`## ${who}`, '', m.content || '', '');
   }
   download(

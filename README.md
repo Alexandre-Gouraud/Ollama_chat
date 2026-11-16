@@ -17,6 +17,7 @@ A local web interface for chatting with Ollama models, with conversation storage
 - 🎨 **Dark/light design system** — configurable accent color (7 persisted hues), signature gradient, status LED
 - ⚙️ **Settings modal** — model selection (size, loaded status), system prompt, temperature, external sources (Claude, GPT, Mistral, Gemini… API keys stored locally only)
 - 🔌 **Built-in Ollama proxy** — no more CORS issues: the frontend goes through `/api/ollama/*`
+- 🌐 **Bilingual FR/EN interface** — flag language switcher in the top bar, locale in the URL (`/fr`, `/en`), choice remembered in a cookie; auto-generated titles, Markdown export and page metadata follow the interface language
 - 📱 **Responsive** — sidebar as a drawer on mobile, touch targets ≥ 44 px, full keyboard navigation and ARIA support
 
 ## Stack
@@ -55,7 +56,7 @@ ollama pull llama3.2
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) (redirected to `/en` or `/fr`, see [Internationalization](#internationalization)).
 
 ### With Docker Compose (recommended)
 
@@ -119,6 +120,8 @@ pnpm docker:up:auto # Full Docker stack
 | POST | `/api/chat` | SSE streaming chat (legacy — the frontend uses the NDJSON proxy) |
 | POST | `/api/chat/title` | Generate a title |
 
+`/api/chat/title` accepts an optional `locale` (`"fr"` or `"en"`, default `"en"`) in its body: the title is generated in that language.
+
 ### Conversations (MongoDB)
 
 | Method | Route | Description |
@@ -129,6 +132,21 @@ pnpm docker:up:auto # Full Docker stack
 | PUT | `/api/conversations/[id]` | Update a conversation |
 | DELETE | `/api/conversations/[id]` | Delete a conversation |
 | POST | `/api/conversations/[id]/save` | Append messages |
+
+## Internationalization
+
+The interface is available in French and English, without an i18n library (native App Router pattern from the Next.js internationalization guide):
+
+| Piece | Location | Role |
+|-------|----------|------|
+| Languages | `src/i18n/config.ts` | `fr`, `en` (default); name, flag, Intl locale; `Accept-Language` negotiation |
+| Dictionaries | `src/i18n/messages/{fr,en}.ts` | UI strings; `en` is typed after `fr`, a missing key fails the typecheck |
+| Routing | `src/proxy.ts` | Redirects locale-less URLs to `/{locale}`: `NEXT_LOCALE` cookie first, then `Accept-Language`, then `en`. `/api`, `/_next` and static files are never redirected |
+| Root layout | `src/app/[lang]/layout.tsx` | `<html lang>`, translated `<title>`/description, loads only the current dictionary |
+| Client access | `src/i18n/I18nProvider.tsx` | `useI18n()` → `{ locale, t, f, size }` |
+| Switcher | `src/components/layout/LanguageSwitcher.tsx` | Flag + `FR`/`EN` in the top bar (flag only on small screens), choice stored in the `NEXT_LOCALE` cookie |
+
+Flags (`public/images/flags/fr.svg`, `gb.svg`) are minimal hand-written SVG renderings of the national flags, used as decoration only (the language name or code is always written next to them).
 
 ## Environment variables
 
@@ -176,7 +194,7 @@ pnpm test           # Run the tests
 pnpm test:coverage  # Coverage report
 ```
 
-Current coverage: **36 tests** — UI components (sidebar, messages, streaming, theme, export, deletion) and type validation.
+Current coverage: **97 tests** — UI components (sidebar, messages, streaming, theme, export, deletion, language switcher), internationalization (dictionaries, locale negotiation, proxy, titles generated in the interface language) and type validation.
 
 ## CI/CD
 

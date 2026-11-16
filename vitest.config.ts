@@ -13,6 +13,8 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}', 'tests/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
+      // Inclut aussi les fichiers jamais chargés par les tests (couverture à 0 %).
+      include: ['src/**/*.{ts,tsx}'],
       reporter: ['text', 'lcov', 'html'],
       exclude: [
         'node_modules/',

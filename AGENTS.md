@@ -20,7 +20,9 @@ Le gestionnaire de paquets est **pnpm 12** (version fixée par `packageManager` 
 
 ### Structure
 
-- `src/app/` — pages et routes API App Router (`api/ollama/[...path]` proxy principal, routes Ollama granulaires `api/ollama/*`, `api/chat`, `api/conversations`)
+- `src/app/` — pages et routes API App Router : layout racine et page sous `[lang]/` (une version par langue), routes API hors langue (`api/ollama/[...path]` proxy principal, routes Ollama granulaires `api/ollama/*`, `api/chat`, `api/conversations`)
+- `src/i18n/` — internationalisation FR/EN sans bibliothèque : `config.ts` (langues, `DEFAULT_LOCALE = 'en'`, cookie `NEXT_LOCALE`, `negotiateLocale`), `messages/{fr,en}.ts` (dictionnaires, `en` typé d'après `fr`), `I18nProvider.tsx` (`useI18n()` côté client), `dictionaries.ts` (`getDictionary()` côté serveur via `next/root-params`), `navigation.ts` (`useSwitchLocale`). Tout texte d'interface passe par les dictionnaires
+- `src/proxy.ts` — redirige les URL sans langue vers `/{langue}` (cookie, puis Accept-Language, sinon `en`) ; n'intercepte ni `/api`, ni `/_next`, ni les fichiers statiques
 - `src/components/`, `src/hooks/`, `src/lib/`, `src/models/`, `src/types/` — composants, hooks, logique partagée, modèles Mongoose, types
 - `tests/` — tests Vitest (Testing Library + jsdom)
 

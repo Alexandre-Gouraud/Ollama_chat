@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDownIcon, CheckIcon, RobotIcon } from '@/components/ui/Icons';
-import { formatSize } from '@/hooks/useOllama';
+import { useI18n } from '@/i18n/I18nProvider';
 import { OllamaModel } from '@/types/chat';
 
 interface Props {
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export default function ModelDropdown({ models, value, onChange, loadedModels }: Props) {
+  const { t, size } = useI18n();
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -80,14 +81,14 @@ export default function ModelDropdown({ models, value, onChange, loadedModels }:
         <span
           className={`status-led ${selectedLoaded ? 'status-led--on' : 'status-led--off'}`}
           role="img"
-          aria-label={selectedLoaded ? 'modèle chargé' : 'modèle non chargé'}
+          aria-label={selectedLoaded ? t.modelDropdown.loaded : t.modelDropdown.notLoaded}
         />
         <RobotIcon size={18} color="var(--accent)" />
         <span className="flex-1 truncate text-sm text-text-primary">
-          {value || 'Aucun modèle disponible'}
+          {value || t.modelDropdown.noneAvailable}
         </span>
         {selected && (
-          <span className="font-mono text-xs text-text-muted">{formatSize(selected.size)}</span>
+          <span className="font-mono text-xs text-text-muted">{size(selected.size)}</span>
         )}
         <ChevronDownIcon size={14} color="var(--color-text-muted)" />
       </button>
@@ -95,11 +96,11 @@ export default function ModelDropdown({ models, value, onChange, loadedModels }:
       {open && (
         <ul
           role="listbox"
-          aria-label="Modèles disponibles"
+          aria-label={t.modelDropdown.listLabel}
           className="absolute top-full left-0 right-0 mt-2 bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50 max-h-64 overflow-y-auto p-1"
         >
           {models.length === 0 && (
-            <li className="px-3 py-3 text-sm text-text-muted text-center">Aucun modèle</li>
+            <li className="px-3 py-3 text-sm text-text-muted text-center">{t.common.noModel}</li>
           )}
           {models.map((m, i) => {
             const isSel = m.name === value;
@@ -117,12 +118,12 @@ export default function ModelDropdown({ models, value, onChange, loadedModels }:
                   <span
                     className={`status-led ${loaded ? 'status-led--on' : 'status-led--off'}`}
                     role="img"
-                    aria-label={loaded ? 'chargé' : 'non chargé'}
+                    aria-label={loaded ? t.modelDropdown.itemLoaded : t.modelDropdown.itemNotLoaded}
                   />
                   <span className={`flex-1 truncate ${isSel ? 'text-accent font-medium' : 'text-text-primary'}`}>
                     {m.name}
                   </span>
-                  <span className="font-mono text-xs text-text-muted">{formatSize(m.size)}</span>
+                  <span className="font-mono text-xs text-text-muted">{size(m.size)}</span>
                   {isSel && <CheckIcon size={15} color="var(--accent)" />}
                 </button>
               </li>

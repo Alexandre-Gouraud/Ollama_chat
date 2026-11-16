@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useI18n } from '@/i18n/I18nProvider';
 import { Message, ChatSettings } from '@/types/chat';
 
 function uid() {
@@ -25,6 +26,7 @@ interface UseChatOptions {
 }
 
 export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: UseChatOptions) {
+  const { t, f } = useI18n();
   const [isStreaming, setIsStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const accumulatorRef = useRef('');
@@ -32,6 +34,8 @@ export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: 
   const onUpdateAssistantRef = useRef(onUpdateAssistant);
   const onStreamEndRef = useRef(onStreamEnd);
   const settingsRef = useRef(settings);
+  // Messages d'erreur dans la langue de l'interface.
+  const errorsRef = useRef(t.chatErrors);
 
   // Pattern « latest ref » : synchronisé après commit (jamais pendant le rendu),
   // lu uniquement dans des handlers déclenchés après coup.
@@ -40,6 +44,7 @@ export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: 
     onUpdateAssistantRef.current = onUpdateAssistant;
     onStreamEndRef.current = onStreamEnd;
     settingsRef.current = settings;
+    errorsRef.current = t.chatErrors;
   });
 
   const sendMessages = useCallback(
@@ -61,6 +66,7 @@ export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: 
         ...messagesToSend.map((m) => ({ role: m.role, content: m.content })),
       ];
 
+      const errors = errorsRef.current;
       const fail = (message: string) => {
         // Préfixe « ❌ » : MessageBubble rend ces messages en rouge.
         onUpdateAssistantRef.current(convId, message);
@@ -84,17 +90,15 @@ export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: 
         });
 
         if (res.status === 502 || res.status === 503) {
-          fail(
-            '❌ Ollama déconnecté — vérifie que le serveur Ollama tourne (ollama serve).'
-          );
+          fail(errors.disconnected);
           return;
         }
         if (res.status === 404) {
-          fail(`❌ Modèle introuvable — lance \`ollama pull ${model}\`.`);
+          fail(f(errors.modelNotFound, { model }));
           return;
         }
         if (!res.ok || !res.body) {
-          fail(`❌ Erreur Ollama (HTTP ${res.status}).`);
+          fail(f(errors.http, { status: res.status }));
           return;
         }
 
@@ -126,9 +130,9 @@ export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: 
 
             if (json.error) {
               if (/not found|no such model|try pulling/i.test(json.error)) {
-                fail(`❌ Modèle introuvable — lance \`ollama pull ${model}\`.`);
+                fail(f(errors.modelNotFound, { model }));
               } else {
-                fail(`❌ Erreur Ollama — ${json.error}`);
+                fail(f(errors.generic, { error: json.error }));
               }
               return;
             }
@@ -145,16 +149,14 @@ export function useChat({ settings, messages, onUpdateAssistant, onStreamEnd }: 
       } catch (err: unknown) {
         // Stop volontaire : on garde le texte déjà accumulé, aucun message.
         if (err instanceof DOMException && err.name === 'AbortError') return;
-        fail(
-          '❌ Ollama déconnecté — vérifie que le serveur Ollama tourne (ollama serve).'
-        );
+        fail(errors.disconnected);
       } finally {
         setIsStreaming(false);
         abortRef.current = null;
         onStreamEndRef.current?.();
       }
     },
-    [isStreaming]
+    [isStreaming, f]
   );
 
   const stop = useCallback(() => {

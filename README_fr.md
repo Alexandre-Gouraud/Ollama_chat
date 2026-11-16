@@ -17,6 +17,7 @@ Interface web locale pour discuter avec des modèles Ollama, avec stockage des c
 - 🎨 **Design system sombre/clair** — couleur d'accent configurable (7 teintes persistées), dégradé signature, LED de statut
 - ⚙️ **Modale Paramètres** — sélection du modèle (taille, statut chargé), system prompt, température, sources externes (Claude, GPT, Mistral, Gemini… clés API stockées uniquement en local)
 - 🔌 **Proxy Ollama intégré** — plus aucun problème de CORS : le frontend passe par `/api/ollama/*`
+- 🌐 **Interface bilingue FR/EN** — sélecteur de langue à drapeaux dans la barre du haut, langue dans l'URL (`/fr`, `/en`), choix mémorisé dans un cookie ; titres générés, export Markdown et métadonnées de page suivent la langue de l'interface
 - 📱 **Responsive** — sidebar en tiroir sur mobile, cibles tactiles ≥ 44 px, navigation clavier et support ARIA complets
 
 ## Stack technique
@@ -55,7 +56,7 @@ ollama pull llama3.2
 pnpm dev
 ```
 
-Ouvrir [http://localhost:3000](http://localhost:3000).
+Ouvrir [http://localhost:3000](http://localhost:3000) (redirigé vers `/en` ou `/fr`, voir [Internationalisation](#internationalisation)).
 
 ### Avec Docker Compose (recommandé)
 
@@ -119,6 +120,8 @@ pnpm docker:up:auto # Stack Docker complète
 | POST | `/api/chat` | Chat en streaming SSE (legacy — le frontend utilise le proxy NDJSON) |
 | POST | `/api/chat/title` | Générer un titre |
 
+`/api/chat/title` accepte un champ `locale` optionnel (`"fr"` ou `"en"`, `"en"` par défaut) dans son corps : le titre est généré dans cette langue.
+
 ### Conversations (MongoDB)
 
 | Méthode | Route | Description |
@@ -129,6 +132,21 @@ pnpm docker:up:auto # Stack Docker complète
 | PUT | `/api/conversations/[id]` | Mettre à jour une conversation |
 | DELETE | `/api/conversations/[id]` | Supprimer une conversation |
 | POST | `/api/conversations/[id]/save` | Ajouter des messages |
+
+## Internationalisation
+
+L'interface est disponible en français et en anglais, sans bibliothèque i18n (pattern natif App Router du guide d'internationalisation de Next.js) :
+
+| Élément | Emplacement | Rôle |
+|---------|-------------|------|
+| Langues | `src/i18n/config.ts` | `fr`, `en` (par défaut) ; nom, drapeau, locale Intl ; négociation `Accept-Language` |
+| Dictionnaires | `src/i18n/messages/{fr,en}.ts` | Textes de l'interface ; `en` est typé d'après `fr`, une clé manquante fait échouer le typecheck |
+| Routage | `src/proxy.ts` | Redirige les URL sans langue vers `/{langue}` : cookie `NEXT_LOCALE` d'abord, puis `Accept-Language`, sinon `en`. `/api`, `/_next` et les fichiers statiques ne sont jamais redirigés |
+| Layout racine | `src/app/[lang]/layout.tsx` | `<html lang>`, `<title>`/description traduits, charge uniquement le dictionnaire courant |
+| Accès client | `src/i18n/I18nProvider.tsx` | `useI18n()` → `{ locale, t, f, size }` |
+| Sélecteur | `src/components/layout/LanguageSwitcher.tsx` | Drapeau + `FR`/`EN` dans la barre du haut (drapeau seul sur petit écran), choix stocké dans le cookie `NEXT_LOCALE` |
+
+Les drapeaux (`public/images/flags/fr.svg`, `gb.svg`) sont des SVG minimaux écrits à la main des drapeaux nationaux, purement décoratifs (le nom ou le code de la langue est toujours écrit à côté).
 
 ## Variables d'environnement
 
@@ -176,7 +194,7 @@ pnpm test           # Lancer les tests
 pnpm test:coverage  # Rapport de couverture
 ```
 
-Couverture actuelle : **36 tests** — composants UI (sidebar, messages, streaming, thème, export, suppression) et validation des types.
+Couverture actuelle : **97 tests** — composants UI (sidebar, messages, streaming, thème, export, suppression, sélecteur de langue), internationalisation (dictionnaires, négociation de langue, proxy, titres générés dans la langue de l'interface) et validation des types.
 
 ## CI/CD
 

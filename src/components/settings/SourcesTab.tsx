@@ -2,7 +2,14 @@
 
 import { PlusIcon, TrashIcon } from '@/components/ui/Icons';
 import { Source, SourceTemplate } from '@/types/source';
-import { SOURCE_TEMPLATES, isSourceConnected, sourceInitial } from '@/lib/sources';
+import { useI18n } from '@/i18n/I18nProvider';
+import {
+  SOURCE_TEMPLATES,
+  isSourceConnected,
+  localizeSource,
+  localizeTemplate,
+  sourceInitial,
+} from '@/lib/sources';
 
 interface Props {
   sources: Source[];
@@ -24,19 +31,20 @@ export default function SourcesTab({
   onUpdateKey,
   onUpdateName,
 }: Props) {
+  const { t, f } = useI18n();
   return (
     <div className="space-y-6">
       <p className="text-sm text-text-muted leading-relaxed">
-        Connectez des fournisseurs de modèles. Les clés API sont stockées uniquement dans votre
-        navigateur et ne sont jamais transmises à un serveur.
+        {t.sources.intro}
       </p>
 
       {/* Sources connectées */}
       <div>
-        <span className={labelClass}>Sources connectées</span>
+        <span className={labelClass}>{t.sources.connected}</span>
         <div className="space-y-2.5">
           {sources.map((source) => {
             const connected = isSourceConnected(source, ollamaOnline);
+            const { name, subtitle } = localizeSource(source, t.sources);
             return (
               <div
                 key={source.id}
@@ -53,26 +61,26 @@ export default function SourcesTab({
                   <div className="flex-1 min-w-0">
                     {source.editableName ? (
                       <input
-                        aria-label="Nom de la source"
+                        aria-label={t.sources.nameLabel}
                         value={source.name}
                         onChange={(e) => onUpdateName(source.id, e.target.value)}
                         className="w-full bg-transparent text-sm font-medium text-text-primary border-b border-transparent hover:border-border focus:border-accent focus:outline-none transition-colors"
                       />
                     ) : (
-                      <p className="text-sm font-medium text-text-primary truncate">{source.name}</p>
+                      <p className="text-sm font-medium text-text-primary truncate">{name}</p>
                     )}
-                    <p className="text-xs text-text-muted truncate">{source.subtitle}</p>
+                    <p className="text-xs text-text-muted truncate">{subtitle}</p>
                   </div>
                   <span
                     className={`status-led ${connected ? 'status-led--on' : 'status-led--off'}`}
                     role="img"
-                    aria-label={connected ? 'connectée' : 'non connectée'}
+                    aria-label={connected ? t.sources.stateConnected : t.sources.stateNotConnected}
                   />
                   {source.removable && (
                     <button
                       type="button"
                       onClick={() => onRemoveSource(source.id)}
-                      aria-label={`Supprimer ${source.name}`}
+                      aria-label={f(t.sources.remove, { name })}
                       className="w-9 h-9 flex items-center justify-center rounded-lg text-text-muted hover:text-led-off hover:bg-led-off/15 transition-colors shrink-0"
                     >
                       <TrashIcon size={15} />
@@ -83,7 +91,7 @@ export default function SourcesTab({
                 {source.requiresKey && (
                   <div className="mt-3">
                     <label htmlFor={`key-${source.id}`} className="sr-only">
-                      Clé API pour {source.name}
+                      {f(t.sources.apiKeyFor, { name })}
                     </label>
                     <input
                       id={`key-${source.id}`}
@@ -91,7 +99,7 @@ export default function SourcesTab({
                       autoComplete="off"
                       value={source.apiKey || ''}
                       onChange={(e) => onUpdateKey(source.id, e.target.value)}
-                      placeholder="Clé API…"
+                      placeholder={t.sources.apiKeyPlaceholder}
                       className="w-full text-sm bg-bg-card border border-border rounded-lg px-3 py-2 text-text-primary placeholder:text-text-placeholder font-mono focus:border-accent focus:outline-none transition-colors"
                     />
                   </div>
@@ -104,9 +112,9 @@ export default function SourcesTab({
 
       {/* Ajouter une source */}
       <div>
-        <span className={labelClass}>Ajouter une source</span>
+        <span className={labelClass}>{t.sources.add}</span>
         <div className="flex flex-wrap gap-2">
-          {SOURCE_TEMPLATES.map((tpl) => (
+          {SOURCE_TEMPLATES.map((template) => localizeTemplate(template, t.sources)).map((tpl) => (
             <button
               key={tpl.kind}
               type="button"
