@@ -15,6 +15,7 @@ Le gestionnaire de paquets est **pnpm 12** (version fixée par `packageManager` 
 - `pnpm dev` — serveur de développement
 - `pnpm build` — build de production
 - `pnpm lint` — ESLint
+- `pnpm typecheck` — typage (`next typegen` puis `tsc --noEmit`)
 - `pnpm test` / `pnpm test:coverage` — Vitest
 - `pnpm docker:up:auto` — stack Docker complète (app + MongoDB + Ollama)
 

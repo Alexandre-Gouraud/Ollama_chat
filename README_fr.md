@@ -87,6 +87,7 @@ pnpm dev            # Développement
 pnpm build          # Build de production
 pnpm start          # Démarrer le serveur de production
 pnpm lint           # ESLint
+pnpm typecheck      # Typecheck (next typegen + tsc)
 pnpm test           # Tests (Vitest)
 pnpm test:watch     # Tests en mode watch
 pnpm test:coverage  # Couverture de code
@@ -200,7 +201,7 @@ Couverture actuelle : **97 tests** — composants UI (sidebar, messages, streami
 
 Workflows GitHub Actions, exécutés sur push et pull request vers `master` et `development` :
 
-- **Ollama CI** — lint → tests + couverture → typecheck (`tsc --noEmit`) → build Next.js → image Docker publiée sur GHCR sur `master` (tags `master`, `master-<sha>`). Tous les jobs Node utilisent pnpm avec cache.
+- **Ollama CI** — lint → tests + couverture → typecheck (`pnpm typecheck` : `next typegen` + `tsc --noEmit`) → build Next.js → image Docker publiée sur GHCR sur `master` (tags `master`, `master-<sha>`). Tous les jobs Node utilisent pnpm avec cache.
 - **Release** — au push d'un tag `vX.Y.Z`, build et publication de l'image Docker versionnée (`X.Y.Z`, `X.Y`, `X`, `latest`) : `docker pull ghcr.io/alexandre-gouraud/ollama_chat:latest`
 - **CodeQL** — analyse de sécurité JavaScript/TypeScript (+ exécution hebdomadaire le lundi)
 - **Dependency Review** — revue des dépendances sur les pull requests (échoue sur les vulnérabilités de sévérité élevée ou critique)
