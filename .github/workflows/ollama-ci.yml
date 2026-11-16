@@ -23,7 +23,7 @@ env:
   REGISTRY: ghcr.io
   # La version de pnpm est lue depuis le champ "packageManager" de package.json
   # (pnpm/action-setup interdit de la spécifier aussi ici).
-  NODE_VERSION: '24'
+  NODE_VERSION: '26'
 
 jobs:
   lint:
@@ -169,8 +169,10 @@ jobs:
         with:
           context: .
           push: ${{ github.ref == 'refs/heads/master' }}
+          # `latest` et les tags semver sont réservés aux releases (release.yml) ;
+          # master publie une image de suivi `master` + `master-<sha>`.
           tags: |
-            ${{ steps.img.outputs.name }}:latest
+            ${{ steps.img.outputs.name }}:master
             ${{ steps.img.outputs.name }}:master-${{ github.sha }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
@@ -181,5 +183,5 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           echo "### Image poussée" >> "$GITHUB_STEP_SUMMARY"
-          echo "- \`${{ steps.img.outputs.name }}:latest\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- \`${{ steps.img.outputs.name }}:master\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- \`${{ steps.img.outputs.name }}:master-${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
