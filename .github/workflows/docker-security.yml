@@ -13,10 +13,6 @@ on:
   # ("configuration not found").
   pull_request:
     branches: [master, development]
-  schedule:
-    # Hebdomadaire, décalé du CodeQL (lundi 03:00 UTC) pour étaler la charge
-    # runner : capte les CVE publiées sur l'image de base même sans push.
-    - cron: '0 4 * * 3'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

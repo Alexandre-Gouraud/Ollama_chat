@@ -13,8 +13,6 @@ on:
   # ("configuration not found").
   pull_request:
     branches: [master, development]
-  schedule:
-    - cron: '0 3 * * 1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
