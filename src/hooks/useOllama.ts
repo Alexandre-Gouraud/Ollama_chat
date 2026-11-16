@@ -3,15 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { OllamaModel } from '@/types/chat';
 
-/** Formate une taille en octets vers une chaîne lisible (Go/Mo). */
-export function formatSize(bytes?: number): string {
-  if (!bytes || bytes <= 0) return '—';
-  const gb = bytes / 1024 ** 3;
-  if (gb >= 1) return `${gb.toFixed(1)} Go`;
-  const mb = bytes / 1024 ** 2;
-  return `${Math.round(mb)} Mo`;
-}
-
 interface UseOllamaResult {
   online: boolean;
   models: OllamaModel[];

@@ -5,6 +5,7 @@ import StarLogo from '@/components/ui/StarLogo';
 import Markdown from './Markdown';
 import { UserIcon, CopyIcon, CheckIcon, ReplyIcon } from '@/components/ui/Icons';
 import { useCopyFeedback } from '@/hooks/useCopyFeedback';
+import { useI18n } from '@/i18n/I18nProvider';
 
 interface Props {
   message: Message;
@@ -18,6 +19,7 @@ function isError(content: string) {
 }
 
 export default function MessageBubble({ message, isStreaming, onQuote }: Props) {
+  const { t } = useI18n();
   const isUser = message.role === 'user';
   const empty = message.content.length === 0;
 
@@ -51,7 +53,7 @@ export default function MessageBubble({ message, isStreaming, onQuote }: Props) 
               <span className="dot-bounce" style={{ animationDelay: '0.2s' }} />
               <span className="dot-bounce" style={{ animationDelay: '0.4s' }} />
             </span>
-            <span className="text-sm text-text-muted">Réflexion en cours…</span>
+            <span className="text-sm text-text-muted">{t.message.thinking}</span>
           </div>
         ) : isError(message.content) ? (
           <p className="text-[15px] leading-relaxed text-led-off whitespace-pre-wrap break-words">
@@ -66,8 +68,8 @@ export default function MessageBubble({ message, isStreaming, onQuote }: Props) 
                 <button
                   type="button"
                   onClick={() => copy(message.content)}
-                  aria-label="Copier la réponse"
-                  title="Copier la réponse"
+                  aria-label={t.message.copy}
+                  title={t.message.copy}
                   className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
                 >
                   {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
@@ -76,15 +78,15 @@ export default function MessageBubble({ message, isStreaming, onQuote }: Props) 
                   <button
                     type="button"
                     onClick={() => onQuote(message.content)}
-                    aria-label="Répondre à ce message"
-                    title="Répondre à ce message"
+                    aria-label={t.message.reply}
+                    title={t.message.reply}
                     className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
                   >
                     <ReplyIcon size={16} />
                   </button>
                 )}
                 <span className="sr-only" role="status" aria-live="polite">
-                  {copied ? 'Réponse copiée' : ''}
+                  {copied ? t.message.copied : ''}
                 </span>
               </div>
             )}

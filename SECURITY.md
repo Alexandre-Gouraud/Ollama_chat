@@ -12,8 +12,8 @@ Ollama Chat is versioned with [semantic version tags](https://github.com/Alexand
 
 | Version | Supported |
 |---------|-----------|
-| `1.1.x` (latest release) | ✅ Security fixes, best effort |
-| `1.0.x` | ❌ Upgrade to `1.1.x` |
+| `1.2.x` (latest release) | ✅ Security fixes, best effort |
+| `1.1.x`, `1.0.x` | ❌ Upgrade to `1.2.x` |
 | `< 1.0` (`0.x` pre-releases) | ❌ |
 | `master`, `development` and other branches | ❌ Not a supported release |
 
@@ -54,8 +54,8 @@ Ollama Chat est versionné avec des [tags sémantiques](https://github.com/Alexa
 
 | Version | Supportée |
 |---------|-----------|
-| `1.1.x` (dernière release) | ✅ Correctifs de sécurité, best effort |
-| `1.0.x` | ❌ Mettre à jour vers `1.1.x` |
+| `1.2.x` (dernière release) | ✅ Correctifs de sécurité, best effort |
+| `1.1.x`, `1.0.x` | ❌ Mettre à jour vers `1.2.x` |
 | `< 1.0` (pré-releases `0.x`) | ❌ |
 | `master`, `development` et autres branches | ❌ Pas une release supportée |
 

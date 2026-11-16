@@ -11,9 +11,10 @@ import {
   CloseIcon,
 } from '@/components/ui/Icons';
 import { useDismiss } from '@/hooks/useDismiss';
-import { formatSize } from '@/hooks/useOllama';
 import { exportConversationJSON, exportConversationMarkdown } from '@/lib/export';
+import { useI18n } from '@/i18n/I18nProvider';
 import { Conversation, OllamaModel } from '@/types/chat';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface Props {
   onToggleSidebar: () => void;
@@ -35,11 +36,12 @@ export default function MainHeader({
   onModelChange,
   onDeleteConversation,
 }: Props) {
+  const { t } = useI18n();
   return (
     <header className="flex items-center gap-2 px-3 sm:px-5 h-[68px] shrink-0 border-b border-border-subtle">
       <button
         onClick={onToggleSidebar}
-        aria-label="Afficher ou masquer la barre latérale"
+        aria-label={t.header.toggleSidebar}
         className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors shrink-0"
       >
         <SidebarToggleIcon size={20} />
@@ -50,6 +52,8 @@ export default function MainHeader({
       </h1>
 
       <div className="flex items-center gap-1.5 shrink-0">
+        {/* Sélecteur de langue, juste à gauche du sélecteur de modèle. */}
+        <LanguageSwitcher />
         <ModelBadge
           models={models}
           selectedModel={selectedModel}
@@ -76,6 +80,7 @@ function ModelBadge({
   selectedModel: string;
   onModelChange: (m: string) => void;
 }) {
+  const { t, size } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
@@ -93,12 +98,12 @@ function ModelBadge({
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label="Changer de modèle"
+        aria-label={t.header.changeModel}
         className="flex items-center gap-1.5 pl-2 pr-2 sm:pl-2.5 sm:pr-2.5 h-9 max-w-[38vw] sm:max-w-[220px] rounded-lg bg-bg-field border border-border hover:bg-bg-field-hover transition-colors text-text-primary"
       >
         <RobotIcon size={16} color="var(--accent)" className="shrink-0" />
         <span className="truncate text-xs sm:text-sm font-medium">
-          {selectedModel || 'Modèle'}
+          {selectedModel || t.header.modelFallback}
         </span>
         <ChevronDownIcon size={13} color="var(--color-text-muted)" className="shrink-0" />
       </button>
@@ -106,11 +111,11 @@ function ModelBadge({
       {open && (
         <ul
           role="listbox"
-          aria-label="Choix rapide du modèle"
+          aria-label={t.header.quickModelChoice}
           className="absolute top-full right-0 mt-2 w-[240px] max-w-[80vw] bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50 max-h-64 overflow-y-auto p-1"
         >
           {models.length === 0 && (
-            <li className="px-3 py-3 text-sm text-text-muted text-center">Aucun modèle</li>
+            <li className="px-3 py-3 text-sm text-text-muted text-center">{t.common.noModel}</li>
           )}
           {models.map((m) => {
             const isSel = m.name === selectedModel;
@@ -126,7 +131,7 @@ function ModelBadge({
                   >
                     {m.name}
                   </span>
-                  <span className="font-mono text-xs text-text-muted">{formatSize(m.size)}</span>
+                  <span className="font-mono text-xs text-text-muted">{size(m.size)}</span>
                   {isSel && <CheckIcon size={15} color="var(--accent)" />}
                 </button>
               </li>
@@ -141,6 +146,7 @@ function ModelBadge({
 /* ---------- Menu d'export ---------- */
 
 function ExportMenu({ conversation }: { conversation: Conversation | null }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
@@ -148,8 +154,8 @@ function ExportMenu({ conversation }: { conversation: Conversation | null }) {
 
   const disabled = !conversation;
 
-  const handle = (fn: (c: Conversation) => void) => {
-    if (conversation) fn(conversation);
+  const handle = (fn: (c: Conversation, labels: typeof t.export) => void) => {
+    if (conversation) fn(conversation, t.export);
     setOpen(false);
   };
 
@@ -161,7 +167,7 @@ function ExportMenu({ conversation }: { conversation: Conversation | null }) {
         disabled={disabled}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Exporter la conversation"
+        aria-label={t.header.exportConversation}
         className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors disabled:opacity-40 disabled:pointer-events-none"
       >
         <DownloadIcon size={18} />
@@ -170,7 +176,7 @@ function ExportMenu({ conversation }: { conversation: Conversation | null }) {
       {open && conversation && (
         <div
           role="menu"
-          aria-label="Formats d'export"
+          aria-label={t.header.exportFormats}
           className="absolute top-full right-0 mt-2 w-[180px] bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden z-50 p-1"
         >
           <button
@@ -179,7 +185,7 @@ function ExportMenu({ conversation }: { conversation: Conversation | null }) {
             onClick={() => handle(exportConversationJSON)}
             className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-text-primary hover:bg-bg-hover transition-colors"
           >
-            Exporter en JSON
+            {t.header.exportJson}
           </button>
           <button
             type="button"
@@ -187,7 +193,7 @@ function ExportMenu({ conversation }: { conversation: Conversation | null }) {
             onClick={() => handle(exportConversationMarkdown)}
             className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-text-primary hover:bg-bg-hover transition-colors"
           >
-            Exporter en Markdown
+            {t.header.exportMarkdown}
           </button>
         </div>
       )}
@@ -204,6 +210,7 @@ function DeleteButton({
   conversation: Conversation | null;
   onDeleteConversation: (id: string) => void;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
@@ -231,7 +238,7 @@ function DeleteButton({
         disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="Supprimer la conversation"
+        aria-label={t.header.deleteConversation}
         className="w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:text-led-off hover:bg-led-off/15 transition-colors disabled:opacity-40 disabled:pointer-events-none"
       >
         <TrashIcon size={17} />
@@ -240,17 +247,17 @@ function DeleteButton({
       {open && conversation && (
         <div
           role="dialog"
-          aria-label="Confirmer la suppression"
+          aria-label={t.common.confirmDelete}
           className="absolute top-full right-0 mt-2 w-[240px] bg-bg-card border border-border rounded-xl shadow-2xl z-50 p-3"
         >
           <div className="flex items-start justify-between gap-2 mb-3">
             <p className="text-sm text-text-primary leading-snug">
-              Supprimer cette conversation ?
+              {t.common.deleteConversationQuestion}
             </p>
             <button
               type="button"
               onClick={close}
-              aria-label="Annuler la suppression"
+              aria-label={t.common.cancelDelete}
               className="w-6 h-6 shrink-0 flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-bg-hover transition-colors"
             >
               <CloseIcon size={14} />
@@ -262,7 +269,7 @@ function DeleteButton({
               onClick={close}
               className="flex-1 h-9 rounded-lg border border-border text-sm text-text-secondary hover:bg-bg-hover transition-colors"
             >
-              Annuler
+              {t.common.cancel}
             </button>
             <button
               ref={confirmRef}
@@ -270,7 +277,7 @@ function DeleteButton({
               onClick={confirm}
               className="flex-1 h-9 rounded-lg bg-led-off text-white text-sm font-medium hover:brightness-110 transition-all"
             >
-              Supprimer
+              {t.common.delete}
             </button>
           </div>
         </div>

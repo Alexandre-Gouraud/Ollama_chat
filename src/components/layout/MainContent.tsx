@@ -12,6 +12,7 @@ import {
   SearchIcon,
 } from '@/components/ui/Icons';
 import { useChat, createMessage } from '@/hooks/useChat';
+import { useI18n } from '@/i18n/I18nProvider';
 import { Message, ChatSettings, Conversation, OllamaModel } from '@/types/chat';
 
 interface Props {
@@ -30,12 +31,13 @@ interface Props {
   onGenerateTitle: (convId: string, messages: Message[]) => void;
 }
 
+// Suggestions de l'écran d'accueil : libellés dans le dictionnaire (welcome.suggestions).
 const suggestions = [
-  { icon: CodeIcon, label: 'Écrire du code', desc: 'Génère du code dans ton langage préféré' },
-  { icon: LightBulbIcon, label: 'Brainstorming', desc: 'Trouve des idées créatives' },
-  { icon: PenIcon, label: 'Rédaction', desc: 'Aide à la rédaction de textes' },
-  { icon: SearchIcon, label: 'Analyse', desc: 'Analyse et explique un concept' },
-];
+  { icon: CodeIcon, key: 'code' },
+  { icon: LightBulbIcon, key: 'brainstorm' },
+  { icon: PenIcon, key: 'writing' },
+  { icon: SearchIcon, key: 'analysis' },
+] as const;
 
 export default function MainContent({
   onToggleSidebar,
@@ -51,6 +53,7 @@ export default function MainContent({
   onSaveConversation,
   onGenerateTitle,
 }: Props) {
+  const { t } = useI18n();
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -137,7 +140,7 @@ export default function MainContent({
       {/* Header */}
       <MainHeader
         onToggleSidebar={onToggleSidebar}
-        title={conversation?.title || settings.model || 'Aucun modèle'}
+        title={conversation?.title || settings.model || t.common.noModel}
         conversation={conversation}
         models={models}
         selectedModel={settings.model}
@@ -156,17 +159,17 @@ export default function MainContent({
                 <StarLogo size={64} gradient className="float-star" />
               </div>
               <h2 className="text-[28px] font-bold text-text-title mb-3">
-                Comment puis-je vous aider ?
+                {t.welcome.title}
               </h2>
               <p className="text-[15px] text-text-muted mb-9">
-                Choisissez une suggestion ou écrivez votre message.
+                {t.welcome.subtitle}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {suggestions.map((s, i) => {
-                  const Icon = s.icon;
+                {suggestions.map(({ icon: Icon, key }) => {
+                  const s = t.welcome.suggestions[key];
                   return (
                     <button
-                      key={i}
+                      key={key}
                       onClick={() => handleSend(s.label)}
                       className="flex flex-col items-start gap-2 p-4 text-left rounded-2xl bg-bg-card border border-border-subtle hover:border-accent hover:bg-bg-field-hover transition-all duration-200 min-h-[44px]"
                     >
@@ -192,13 +195,13 @@ export default function MainContent({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Écrivez votre message…"
-              aria-label="Message"
+              placeholder={t.composer.placeholder}
+              aria-label={t.composer.label}
               className="flex-1 bg-transparent py-2 text-[15px] text-text-primary placeholder:text-text-placeholder resize-none outline-none max-h-[200px]"
             />
             <button
               onClick={() => handleSend()}
-              aria-label={isStreaming ? 'Arrêter la génération' : 'Envoyer le message'}
+              aria-label={isStreaming ? t.composer.stop : t.composer.send}
               className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all duration-150 ${
                 isStreaming ? 'bg-led-off hover:brightness-110' : 'gradient-bg hover:brightness-110'
               }`}
@@ -211,7 +214,7 @@ export default function MainContent({
             </button>
           </div>
           <p className="text-center text-[11px] text-text-faint mt-2">
-            Les réponses sont générées localement via Ollama
+            {t.composer.footnote}
           </p>
         </div>
       </div>

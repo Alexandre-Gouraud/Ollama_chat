@@ -1,8 +1,14 @@
+import type { Messages } from '@/i18n/messages';
 import { Source, SourceTemplate } from '@/types/source';
 
 export const SOURCES_STORAGE_KEY = 'ollama-chat-sources';
 
-/** Source Ollama locale, toujours présente et non supprimable. */
+/**
+ * Source Ollama locale, toujours présente et non supprimable. Les libellés
+ * français ci-dessous (et ceux de SOURCE_TEMPLATES) sont des valeurs de repli
+ * stockées avec la source : l'affichage passe par localizeSource /
+ * localizeTemplate, qui les remplacent par ceux du dictionnaire courant.
+ */
 export const OLLAMA_SOURCE: Source = {
   id: 'ollama-local',
   kind: 'ollama',
@@ -31,6 +37,26 @@ export function isSourceConnected(source: Source, ollamaOnline: boolean): boolea
   if (source.kind === 'ollama') return ollamaOnline;
   if (!source.requiresKey) return true;
   return Boolean(source.apiKey && source.apiKey.trim().length > 0);
+}
+
+type SourceLabels = Messages['sources'];
+
+/**
+ * Nom et sous-titre affichés d'une source, dans la langue de l'interface. Seuls
+ * les libellés intégrés sont traduits : Ollama local (non éditable) et le
+ * sous-titre des sources personnalisées. Les noms de marque et les noms saisis
+ * par l'utilisateur restent tels quels.
+ */
+export function localizeSource(source: Source, labels: SourceLabels): { name: string; subtitle: string } {
+  if (source.kind === 'ollama') return { name: labels.ollamaName, subtitle: labels.ollamaSubtitle };
+  if (source.kind === 'custom') return { name: source.name, subtitle: labels.customSubtitle };
+  return { name: source.name, subtitle: source.subtitle };
+}
+
+/** Modèle de source traduit (libellé du bouton et nom par défaut de la source créée). */
+export function localizeTemplate(template: SourceTemplate, labels: SourceLabels): SourceTemplate {
+  if (template.kind !== 'custom') return template;
+  return { ...template, label: labels.customLabel, subtitle: labels.customSubtitle };
 }
 
 /** Initiale affichée dans le badge de la source. */

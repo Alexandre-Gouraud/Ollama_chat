@@ -1,12 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MessageBubble from '@/components/chat/MessageBubble';
 import ChatArea from '@/components/chat/ChatArea';
 import Sidebar from '@/components/layout/Sidebar';
 import MainHeader from '@/components/layout/MainHeader';
 import { Conversation } from '@/types/chat';
+import { en } from '@/i18n/messages/en';
+import { renderWithI18n as render } from './i18n-utils';
+
+// MainHeader inclut le sélecteur de langue, qui navigue via le routeur Next.
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+  usePathname: () => '/fr',
+}));
 
 HTMLDivElement.prototype.scrollIntoView = vi.fn();
 
@@ -428,6 +436,28 @@ describe('MainHeader', () => {
     expect(onDeleteConversation).not.toHaveBeenCalled();
     await user.click(screen.getByRole('button', { name: 'Supprimer' }));
     expect(onDeleteConversation).toHaveBeenCalledWith('conv1');
+  });
+
+  it('places the language switcher just left of the model button', () => {
+    render(<MainHeader {...baseProps} />);
+    const languageButton = screen.getByRole('button', { name: /Changer de langue/ });
+    const modelButton = screen.getByLabelText('Changer de modèle');
+    // Le bouton de langue précède le sélecteur de modèle…
+    expect(
+      languageButton.compareDocumentPosition(modelButton) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    // …sans aucun autre bouton entre les deux.
+    const buttons = screen.getAllByRole('button');
+    expect(buttons.indexOf(modelButton) - buttons.indexOf(languageButton)).toBe(1);
+  });
+
+  it('renders its labels from the English dictionary under the en locale', () => {
+    render(<MainHeader {...baseProps} />, { locale: 'en' });
+    expect(screen.getByLabelText(en.header.changeModel)).toBeTruthy();
+    expect(screen.getByLabelText(en.header.exportConversation)).toBeTruthy();
+    expect(screen.getByLabelText(en.header.deleteConversation)).toBeTruthy();
+    expect(screen.getByLabelText(en.header.toggleSidebar)).toBeTruthy();
+    expect(screen.getByRole('button', { name: new RegExp(en.language.change) })).toBeTruthy();
   });
 
   it('disables export and delete without an active conversation', () => {

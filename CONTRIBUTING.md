@@ -27,7 +27,7 @@
    ```bash
    pnpm lint
    pnpm test
-   pnpm exec tsc --noEmit
+   pnpm typecheck
    pnpm build
    ```
 5. Keep the pull request small and focused, describe what it changes and why, and update the docs (`README.md` and `README_fr.md`) when behavior changes.
@@ -66,7 +66,7 @@
    ```bash
    pnpm lint
    pnpm test
-   pnpm exec tsc --noEmit
+   pnpm typecheck
    pnpm build
    ```
 5. Gardez la pull request petite et ciblée, décrivez ce qu'elle change et pourquoi, et mettez à jour la documentation (`README.md` et `README_fr.md`) quand le comportement change.

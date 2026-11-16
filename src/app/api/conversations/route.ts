@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
 
     const conversation = new ConversationModel({
       userId,
+      // Repli serveur seulement : le client envoie toujours un titre déjà traduit
+      // (useConversations). Les titres stockés sont des données, jamais retraduits.
       title: body.title || 'Nouvelle conversation',
       modelName: body.modelName || body.model || 'llama3.2',
       messages: body.messages || [],

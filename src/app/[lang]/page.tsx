@@ -9,6 +9,7 @@ import { useAppSettings } from '@/hooks/useAppSettings';
 import { useOllama } from '@/hooks/useOllama';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { ACCENTS } from '@/lib/theme';
+import { useI18n } from '@/i18n/I18nProvider';
 import { Message } from '@/types/chat';
 
 // Chargée à la demande (ouverture de la modale) pour l'écarter du bundle initial.
@@ -17,6 +18,7 @@ const SettingsModal = dynamic(() => import('@/components/settings/SettingsModal'
 });
 
 export default function Home() {
+  const { t } = useI18n();
   const isDesktop = useIsDesktop();
   // null = suit le breakpoint (ouvert sur desktop, fermé sur mobile) ; sinon choix explicite.
   const [sidebarOverride, setSidebarOverride] = useState<boolean | null>(null);
@@ -97,7 +99,7 @@ export default function Home() {
       {/* Backdrop mobile */}
       {sidebarOpen && (
         <button
-          aria-label="Fermer la barre latérale"
+          aria-label={t.page.closeSidebar}
           onClick={() => setSidebarOverride(false)}
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
         />

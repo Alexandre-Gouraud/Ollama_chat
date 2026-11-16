@@ -99,7 +99,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run TypeScript compiler check
-        run: pnpm exec tsc --noEmit
+        # next typegen génère les types globaux des routes (LayoutProps,
+        # PageProps…) dans .next/types, absents sur un checkout neuf.
+        run: pnpm typecheck
 
   build-nextjs:
     name: Build Next.js

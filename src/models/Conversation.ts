@@ -33,6 +33,8 @@ const MessageSchema = new Schema<IMessage>(
 const ConversationSchema = new Schema<IConversation>(
   {
     userId: { type: String, required: true, index: true },
+    // Valeur de repli du schéma : le client fournit toujours un titre dans la
+    // langue de l'interface ; la conserver évite de modifier les données existantes.
     title: { type: String, default: 'Nouvelle conversation' },
     modelName: { type: String, required: true },
     messages: { type: [MessageSchema], default: [] },
