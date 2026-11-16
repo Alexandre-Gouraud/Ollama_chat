@@ -26,14 +26,14 @@ A local web interface for chatting with Ollama models, with conversation storage
 - **AI**: [Ollama](https://ollama.com) — local models (Llama, Mistral, etc.)
 - **Database**: MongoDB (Mongoose 9)
 - **Tests**: Vitest 5 + Testing Library (jsdom)
-- **Containerization**: Multi-stage Docker on `node:24-alpine` (pnpm/corepack), Docker Compose
+- **Containerization**: Multi-stage Docker on `node:26-alpine` (pnpm 12), Docker Compose
 - **Package manager**: **pnpm 12** (pinned via `packageManager`, never npm/yarn)
 
 ## Quick start
 
 ### Prerequisites
 
-- Node.js 24+ and **pnpm 12** (`corepack enable pnpm`)
+- Node.js 26+ and **pnpm 12** (`npm install -g pnpm@12`: corepack is no longer bundled with Node ≥ 25)
 - Docker & Docker Compose (for the containerized stack)
 - Ollama installed locally (`ollama serve`)
 
@@ -182,7 +182,8 @@ Current coverage: **36 tests** — UI components (sidebar, messages, streaming, 
 
 GitHub Actions workflows, run on push and pull request to `master` and `development`:
 
-- **Ollama CI** — lint → tests + coverage → typecheck (`tsc --noEmit`) → Next.js build → Docker image published to GHCR (push on `master` only). All Node jobs use pnpm with caching.
+- **Ollama CI** — lint → tests + coverage → typecheck (`tsc --noEmit`) → Next.js build → Docker image published to GHCR on `master` (`master`, `master-<sha>` tags). All Node jobs use pnpm with caching.
+- **Release** — on a `vX.Y.Z` tag push, builds and publishes the versioned Docker image (`X.Y.Z`, `X.Y`, `X`, `latest`): `docker pull ghcr.io/alexandre-gouraud/ollama_chat:latest`
 - **CodeQL** — JavaScript/TypeScript security analysis (plus a weekly run on Mondays)
 - **Dependency Review** — dependency review on pull requests (fails on high+ severity vulnerabilities)
 - **Docker Security Scan** — image build + Trivy scan (SARIF uploaded to the Security tab, blocking gate on fixed critical CVEs, plus a filesystem dependency scan; weekly on Wednesdays)

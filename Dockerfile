@@ -1,18 +1,20 @@
-FROM node:24-alpine AS base
+FROM node:26-alpine AS base
+# Node >= 25 n'embarque plus corepack : pnpm@12.21.0 (aligné sur le champ
+# "packageManager" de package.json, utilisé aussi par la CI via
+# pnpm/action-setup) est installé une fois dans l'étape de base. npm ne sert
+# qu'à poser pnpm et est retiré de l'image finale (cf. runner).
+RUN npm install -g pnpm@12.21.0 && pnpm --version
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-# pnpm@12.14.0 aligné sur le champ "packageManager" de package.json (utilisé
-# aussi par la CI via pnpm/action-setup) ; les scripts de build des
-# dépendances sont réglés par allowBuilds dans pnpm-workspace.yaml.
-RUN corepack enable pnpm && corepack prepare pnpm@12.14.0 --activate
+# Les scripts de build des dépendances sont réglés par allowBuilds dans
+# pnpm-workspace.yaml.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY patches ./patches
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-RUN corepack enable pnpm && corepack prepare pnpm@12.14.0 --activate
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -31,11 +33,12 @@ RUN apk upgrade --no-cache
 
 ENV NODE_ENV=production
 
-# npm/npx/corepack ne sont jamais utilisés au runtime (CMD lance node
+# npm/npx/corepack/pnpm ne sont jamais utilisés au runtime (CMD lance node
 # directement) : on les retire pour réduire la surface d'attaque et éliminer
 # les CVE de leurs dépendances embarquées (ex. tar fourni avec npm).
-RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
-    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/lib/node_modules/pnpm \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/pnpm /usr/local/bin/pnpx \
+    /usr/local/bin/pn /usr/local/bin/pnx
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs

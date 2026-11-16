@@ -26,14 +26,14 @@ Interface web locale pour discuter avec des modèles Ollama, avec stockage des c
 - **IA** : [Ollama](https://ollama.com) — modèles locaux (Llama, Mistral, etc.)
 - **Base de données** : MongoDB (Mongoose 9)
 - **Tests** : Vitest 5 + Testing Library (jsdom)
-- **Conteneurisation** : Docker multi-stage sur `node:24-alpine` (pnpm/corepack), Docker Compose
+- **Conteneurisation** : Docker multi-stage sur `node:26-alpine` (pnpm 12), Docker Compose
 - **Gestionnaire de paquets** : **pnpm 12** (épinglé via `packageManager`, jamais npm/yarn)
 
 ## Démarrage rapide
 
 ### Prérequis
 
-- Node.js 24+ et **pnpm 12** (`corepack enable pnpm`)
+- Node.js 26+ et **pnpm 12** (`npm install -g pnpm@12` : corepack n'est plus fourni avec Node ≥ 25)
 - Docker & Docker Compose (pour la stack conteneurisée)
 - Ollama installé localement (`ollama serve`)
 
@@ -182,7 +182,8 @@ Couverture actuelle : **36 tests** — composants UI (sidebar, messages, streami
 
 Workflows GitHub Actions, exécutés sur push et pull request vers `master` et `development` :
 
-- **Ollama CI** — lint → tests + couverture → typecheck (`tsc --noEmit`) → build Next.js → image Docker publiée sur GHCR (push sur `master` uniquement). Tous les jobs Node utilisent pnpm avec cache.
+- **Ollama CI** — lint → tests + couverture → typecheck (`tsc --noEmit`) → build Next.js → image Docker publiée sur GHCR sur `master` (tags `master`, `master-<sha>`). Tous les jobs Node utilisent pnpm avec cache.
+- **Release** — au push d'un tag `vX.Y.Z`, build et publication de l'image Docker versionnée (`X.Y.Z`, `X.Y`, `X`, `latest`) : `docker pull ghcr.io/alexandre-gouraud/ollama_chat:latest`
 - **CodeQL** — analyse de sécurité JavaScript/TypeScript (+ exécution hebdomadaire le lundi)
 - **Dependency Review** — revue des dépendances sur les pull requests (échoue sur les vulnérabilités de sévérité élevée ou critique)
 - **Docker Security Scan** — build de l'image + scan Trivy (SARIF envoyé vers l'onglet Security, gate bloquante sur les CVE critiques corrigées, ainsi qu'un scan des dépendances du dépôt ; hebdomadaire le mercredi)

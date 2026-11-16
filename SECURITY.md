@@ -8,13 +8,14 @@
 
 ## Supported versions
 
-Ollama Chat is a single-line, actively developed project (pre-1.0, no published releases or version tags). Only the latest commit on the [`master`](https://github.com/Alexandre-Gouraud/Ollama_chat/tree/master) branch is supported with security fixes.
+Ollama Chat is versioned with [semantic version tags](https://github.com/Alexandre-Gouraud/Ollama_chat/releases) (`vX.Y.Z`), each with a matching Docker image on GHCR (`ghcr.io/alexandre-gouraud/ollama_chat:X.Y.Z`). Only the **latest release line** receives security fixes, on a best-effort basis (small, independently maintained project).
 
 | Version | Supported |
 |---------|-----------|
-| `master` (latest) | ✅ |
-| `development` and other branches | ⚠️ Best effort only |
-| Older commits / forks | ❌ |
+| `1.1.x` (latest release) | ✅ Security fixes, best effort |
+| `1.0.x` | ❌ Upgrade to `1.1.x` |
+| `< 1.0` (`0.x` pre-releases) | ❌ |
+| `master`, `development` and other branches | ❌ Not a supported release |
 
 ## Reporting a vulnerability
 
@@ -29,7 +30,7 @@ When reporting, please include:
 
 - A description of the vulnerability and its potential impact.
 - Steps to reproduce (proof of concept if possible).
-- The affected file(s)/route(s) and commit hash.
+- The affected version (tag), file(s)/route(s) and commit hash.
 
 This is a small, independently maintained project — response times are best-effort. You should expect an initial acknowledgement within a few days. Confirmed vulnerabilities will be fixed and disclosed once a patch is available; credit will be given unless you prefer to remain anonymous.
 
@@ -49,13 +50,14 @@ Ollama Chat is designed to run **locally or on a trusted network**, in front of 
 
 ## Versions supportées
 
-Ollama Chat est un projet à ligne unique, activement développé (pré-1.0, sans releases ni tags de version publiés). Seul le dernier commit de la branche [`master`](https://github.com/Alexandre-Gouraud/Ollama_chat/tree/master) bénéficie de correctifs de sécurité.
+Ollama Chat est versionné avec des [tags sémantiques](https://github.com/Alexandre-Gouraud/Ollama_chat/releases) (`vX.Y.Z`), chacun associé à une image Docker sur GHCR (`ghcr.io/alexandre-gouraud/ollama_chat:X.Y.Z`). Seule la **dernière ligne de release** reçoit des correctifs de sécurité, en best effort (petit projet maintenu de façon indépendante).
 
 | Version | Supportée |
 |---------|-----------|
-| `master` (dernière version) | ✅ |
-| `development` et autres branches | ⚠️ Best effort uniquement |
-| Anciens commits / forks | ❌ |
+| `1.1.x` (dernière release) | ✅ Correctifs de sécurité, best effort |
+| `1.0.x` | ❌ Mettre à jour vers `1.1.x` |
+| `< 1.0` (pré-releases `0.x`) | ❌ |
+| `master`, `development` et autres branches | ❌ Pas une release supportée |
 
 ## Signaler une vulnérabilité
 
@@ -70,7 +72,7 @@ Merci d'inclure dans le signalement :
 
 - Une description de la vulnérabilité et de son impact potentiel.
 - Les étapes de reproduction (preuve de concept si possible).
-- Le(s) fichier(s)/route(s) concerné(s) et le hash du commit.
+- La version concernée (tag), le(s) fichier(s)/route(s) et le hash du commit.
 
 Il s'agit d'un petit projet maintenu de façon indépendante — les délais de réponse sont donnés à titre indicatif (best effort). Un premier accusé de réception est à prévoir sous quelques jours. Les vulnérabilités confirmées seront corrigées puis divulguées une fois un correctif disponible ; les crédits seront donnés sauf demande d'anonymat de ta part.
 
