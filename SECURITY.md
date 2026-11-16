@@ -8,11 +8,11 @@
 
 ## Supported versions
 
-Ollama Chat is versioned with [semantic version tags](https://github.com/Alexandre-Gouraud/Ollama_chat/releases) (`vX.Y.Z`), each with a matching Docker image on GHCR (`ghcr.io/alexandre-gouraud/ollama_chat:X.Y.Z`). **v1.1.x is the final release line**: the project is no longer actively developed, and only critical security fixes may still be published on a best-effort basis.
+Ollama Chat is versioned with [semantic version tags](https://github.com/Alexandre-Gouraud/Ollama_chat/releases) (`vX.Y.Z`), each with a matching Docker image on GHCR (`ghcr.io/alexandre-gouraud/ollama_chat:X.Y.Z`). Only the **latest release line** receives security fixes, on a best-effort basis (small, independently maintained project).
 
 | Version | Supported |
 |---------|-----------|
-| `1.1.x` (latest, final release) | ⚠️ Critical security fixes only, best effort |
+| `1.1.x` (latest release) | ✅ Security fixes, best effort |
 | `1.0.x` | ❌ Upgrade to `1.1.x` |
 | `< 1.0` (`0.x` pre-releases) | ❌ |
 | `master`, `development` and other branches | ❌ Not a supported release |
@@ -50,11 +50,11 @@ Ollama Chat is designed to run **locally or on a trusted network**, in front of 
 
 ## Versions supportées
 
-Ollama Chat est versionné avec des [tags sémantiques](https://github.com/Alexandre-Gouraud/Ollama_chat/releases) (`vX.Y.Z`), chacun associé à une image Docker sur GHCR (`ghcr.io/alexandre-gouraud/ollama_chat:X.Y.Z`). **La ligne v1.1.x est la dernière** : le projet n'est plus activement développé, et seuls des correctifs de sécurité critiques peuvent encore être publiés, en best effort.
+Ollama Chat est versionné avec des [tags sémantiques](https://github.com/Alexandre-Gouraud/Ollama_chat/releases) (`vX.Y.Z`), chacun associé à une image Docker sur GHCR (`ghcr.io/alexandre-gouraud/ollama_chat:X.Y.Z`). Seule la **dernière ligne de release** reçoit des correctifs de sécurité, en best effort (petit projet maintenu de façon indépendante).
 
 | Version | Supportée |
 |---------|-----------|
-| `1.1.x` (dernière release, finale) | ⚠️ Correctifs de sécurité critiques uniquement, best effort |
+| `1.1.x` (dernière release) | ✅ Correctifs de sécurité, best effort |
 | `1.0.x` | ❌ Mettre à jour vers `1.1.x` |
 | `< 1.0` (pré-releases `0.x`) | ❌ |
 | `master`, `development` et autres branches | ❌ Pas une release supportée |
